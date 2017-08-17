@@ -5,6 +5,7 @@ var scale = 50;
 var mapRenderBlocks = 100;
 var worldMap;
 var raycaster;
+var mouseEvent;
 var blocker = document.getElementById( 'blocker' );
 var instructions = document.getElementById( 'instructions' );
 // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
@@ -111,7 +112,7 @@ function init() {
 	
 
 	worldMap = new WorldMap(scale, scene, mapRenderBlocks)
-	
+	mouseEvent = new MouseEvent(worldMap.objects, camera);
 	renderer = new THREE.WebGLRenderer();
 	renderer.setClearColor( 0xffffff );
 	renderer.setPixelRatio( window.devicePixelRatio );
@@ -154,6 +155,7 @@ function animate() {
 			canJump = true;
 		}
 		prevTime = time;
+		mouseEvent.render();
 	}
 	renderer.render( scene, camera );
 }
