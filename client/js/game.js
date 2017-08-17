@@ -1,10 +1,9 @@
 var camera, scene, renderer;
 var geometry, material, mesh;
 var controls;
-var objects = [];
 var scale = 50;
 var mapRenderBlocks = 100;
-var waterBorder;
+var worldMap;
 var raycaster;
 var blocker = document.getElementById( 'blocker' );
 var instructions = document.getElementById( 'instructions' );
@@ -55,7 +54,7 @@ var canJump = false;
 var prevTime = performance.now();
 var velocity = new THREE.Vector3();
 function init() {
-	camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
+	camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 5000 );
 	scene = new THREE.Scene();
 	//scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
 	var light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
@@ -111,37 +110,8 @@ function init() {
 	raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
 	
 
-	var geometry = new THREE.PlaneGeometry( scale, scale);
-	var materialWater = new THREE.MeshBasicMaterial( {color: 0x1e74ff, side: THREE.DoubleSide} );
-	var materialGrass = new THREE.MeshBasicMaterial( {color: 0x4cff90, side: THREE.DoubleSide} );
-	var materialStone = new THREE.MeshBasicMaterial( {color: 0x446970, side: THREE.DoubleSide} );
-	for (var x = 0; x < mapRenderBlocks; x++) {
-		for (var y = 0; y < mapRenderBlocks; y++) {
-			var v = Math.abs(noise.simplex2((x * 20) / 400, (y * 20) / 400));
-			var design = materialWater;
-			var type = 0;
-			if(v > 0.2){
-				if(v <= 0.7){
-					type = 1;
-					design = materialGrass;
-				}else{
-					type = 2;
-					design = materialStone;
-				}
-			}
-			var plane = new THREE.Mesh( geometry, design );
-			plane.position.x = x * scale;
-			plane.position.z = y * scale;
-			plane.position.y = -scale*3;
-			if(type == 0){
-			plane.position.y += -15;	
-			}
-			plane.rotation.x = 1.57;
-			scene.add( plane );
-			objects.push( {plane: plane, x: x, y: y, type });
-		}
-	}
-	waterBorder = new WaterBorder(objects, mapRenderBlocks, scene, scale);
+	worldMap = new WorldMap(scale, scene, mapRenderBlocks)
+	
 	renderer = new THREE.WebGLRenderer();
 	renderer.setClearColor( 0xffffff );
 	renderer.setPixelRatio( window.devicePixelRatio );
@@ -167,10 +137,10 @@ function animate() {
 		velocity.x -= velocity.x * 10.0 * delta;
 		velocity.z -= velocity.z * 10.0 * delta;
 		velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
-		if ( moveForward ) velocity.z -= 1400.0 * delta;
-		if ( moveBackward ) velocity.z += 1400.0 * delta;
-		if ( moveLeft ) velocity.x -= 1400.0 * delta;
-		if ( moveRight ) velocity.x += 1400.0 * delta;
+		if ( moveForward ) velocity.z -= 2400.0 * delta; // 400
+		if ( moveBackward ) velocity.z += 2400.0 * delta; // 400
+		if ( moveLeft ) velocity.x -= 2400.0 * delta; // 400
+		if ( moveRight ) velocity.x += 2400.0 * delta; // 400
 		/*if ( isOnObject === true ) {
 			velocity.y = Math.max( 0, velocity.y );
 			canJump = true;
@@ -178,9 +148,9 @@ function animate() {
 		controls.getObject().translateX( velocity.x * delta );
 		controls.getObject().translateY( velocity.y * delta );
 		controls.getObject().translateZ( velocity.z * delta );
-		if ( controls.getObject().position.y < 10 ) {
+		if ( controls.getObject().position.y < 50 ) {
 			velocity.y = 0;
-			controls.getObject().position.y = 10;
+			controls.getObject().position.y = 50;
 			canJump = true;
 		}
 		prevTime = time;
