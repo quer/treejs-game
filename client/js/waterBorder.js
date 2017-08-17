@@ -88,8 +88,8 @@ WaterBorder.prototype.MakePlate = function(x, y, rotation) {
 	var geometry = new THREE.PlaneGeometry( this.scale, this.scale /2);
 	var material = new THREE.MeshBasicMaterial( {color: 0x000000, side: THREE.DoubleSide} );
 	var plane = new THREE.Mesh( geometry, material );
-	plane.position.x = x * this.scale;
-	plane.position.z = y * this.scale;
+	plane.position.x = x * this.scale - (this.mapRenderBlocks * scale) /2;
+	plane.position.z = y * this.scale - (this.mapRenderBlocks * scale) /2;
 	plane.position.y = -this.scale*3 + -(this.scale /4);
 
 	plane.rotation.x += rotation.x;

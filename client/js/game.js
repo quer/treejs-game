@@ -80,10 +80,7 @@ function init() {
 			case 68: // d
 				moveRight = true;
 				break;
-			case 32: // space
-				if ( canJump === true ) velocity.y += 350;
-				canJump = false;
-				break;
+			
 		}
 	};
 	var onKeyUp = function ( event ) {
@@ -108,11 +105,13 @@ function init() {
 	};
 	document.addEventListener( 'keydown', onKeyDown, false );
 	document.addEventListener( 'keyup', onKeyUp, false );
-	raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
+	//raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
 	
 
 	worldMap = new WorldMap(scale, scene, mapRenderBlocks)
-	mouseEvent = new MouseEvent(worldMap.objects, camera);
+	mouseEvent = new MouseEvent(worldMap.objects, camera, scale, scene);
+
+
 	renderer = new THREE.WebGLRenderer();
 	renderer.setClearColor( 0xffffff );
 	renderer.setPixelRatio( window.devicePixelRatio );
@@ -129,8 +128,8 @@ function onWindowResize() {
 function animate() {
 	requestAnimationFrame( animate );
 	if ( controlsEnabled ) {
-		raycaster.ray.origin.copy( controls.getObject().position );
-		raycaster.ray.origin.y -= 10;
+		/*raycaster.ray.origin.copy( controls.getObject().position );
+		raycaster.ray.origin.y -= 10;*/
 		//var intersections = raycaster.intersectObjects( objects );
 		//var isOnObject = intersections.length > 0;
 		var time = performance.now();
@@ -155,7 +154,7 @@ function animate() {
 			canJump = true;
 		}
 		prevTime = time;
-		mouseEvent.render();
 	}
+		mouseEvent.render();
 	renderer.render( scene, camera );
 }

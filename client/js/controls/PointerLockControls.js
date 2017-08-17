@@ -19,16 +19,27 @@ THREE.PointerLockControls = function ( camera ) {
 
 	var onMouseMove = function ( event ) {
 
-		if ( scope.enabled === false ) return;
+		if ( scope.enabled === false  || !this.mouseDown) return;
 
 		var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
 		var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+		/*yawObject.rotation.y -= movementX * 0.002;
+		pitchObject.rotation.x -= movementY * 0.002;
 
+		pitchObject.rotation.x = Math.max( - PI_2, Math.min( PI_2, pitchObject.rotation.x ) );*/
 		yawObject.rotation.y -= movementX * 0.002;
 		pitchObject.rotation.x -= movementY * 0.002;
 
 		pitchObject.rotation.x = Math.max( - PI_2, Math.min( PI_2, pitchObject.rotation.x ) );
 
+	};
+
+	var onMouseDown = function (event) {
+		this.mouseDown = true;
+	};
+
+	var onMouseUp = function (event) {
+		this.mouseDown = false;
 	};
 
 	this.dispose = function() {
@@ -38,9 +49,10 @@ THREE.PointerLockControls = function ( camera ) {
 	};
 
 	document.addEventListener( 'mousemove', onMouseMove, false );
-
+	document.addEventListener( 'mousedown', onMouseDown, false );
+	document.addEventListener( 'mouseup', onMouseUp, false );
 	this.enabled = false;
-
+	this.mouseDown = false;
 	this.getObject = function () {
 
 		return yawObject;
