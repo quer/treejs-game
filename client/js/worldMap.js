@@ -1,4 +1,4 @@
-function WorldMap(scale, scene, mapRenderBlocks) {
+function WorldMap(scale, scene, mapRenderBlocks, baseGame) {
 	this.scale = scale;
 	this.waterPlane;
 	this.scene = scene;
@@ -15,10 +15,11 @@ function WorldMap(scale, scene, mapRenderBlocks) {
 	this.waterPlane = new THREE.Mesh( waterGeometry, materialWater );
 	this.waterPlane.position.x += (( this.scale * (this.mapRenderBlocks + 2)) / 2)- this.scale  - (this.mapRenderBlocks * scale) /2;
 	this.waterPlane.position.z += (( this.scale * (this.mapRenderBlocks + 2)) / 2)- this.scale  - (this.mapRenderBlocks * scale) /2;	
-	this.waterPlane.position.y = -this.scale*3 + -(this.scale/2);
+	this.waterPlane.position.y = -(this.scale/2);
 	this.waterPlane.rotation.x = 1.57;
 	this.scene.add( this.waterPlane );
 	//ground water addet!
+	var objectsForBaseGame = [];
 	for (var x = 0; x < this.mapRenderBlocks; x++) {
 		for (var y = 0; y < this.mapRenderBlocks; y++) {
 			//var materialWater = new THREE.MeshBasicMaterial( {color: 0x1e74ff, side: THREE.BackSide} );
@@ -41,13 +42,14 @@ function WorldMap(scale, scene, mapRenderBlocks) {
 				var plane = new THREE.Mesh( geometry, design );
 				plane.position.x = (x * scale) - (this.mapRenderBlocks * scale) /2;
 				plane.position.z = (y * scale) - (this.mapRenderBlocks * scale) /2;
-				plane.position.y = -scale*3;
-				//plane.position.y += -(scale/2);	
+				//plane.position.y = -scale*3;	
 				plane.rotateX((90 * Math.PI)/180);
 				this.scene.add( plane );
 			}
-			this.objects.push( {plane: plane, x: x, y: y, type });
+			this.objects.push( {plane: plane, x: x, y: y, type: type });
+			objectsForBaseGame.push( {x: x, y: y, type: type });
 		}
 	}
+	//baseGame.init(objectsForBaseGame);
 	waterBorder = new WaterBorder(this.objects, this.mapRenderBlocks, this.scene, this.scale);
 }

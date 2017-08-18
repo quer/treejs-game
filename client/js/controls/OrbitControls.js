@@ -45,13 +45,13 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// Set to true to enable damping (inertia)
 	// If damping is enabled, you must call controls.update() in your animation loop
-	this.enableDamping = false;
+	this.enableDamping = true;
 	this.dampingFactor = 0.25;
 
 	// This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
 	// Set to false to disable zooming
 	this.enableZoom = true;
-	this.zoomSpeed = 1.0;
+	this.zoomSpeed = 5.0;
 
 	// Set to false to disable rotating
 	this.enableRotate = true;
@@ -59,7 +59,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// Set to false to disable panning
 	this.enablePan = true;
-	this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
+	this.keyPanSpeed = 30.0;	// pixels moved per arrow key push
 
 	// Set to true to automatically rotate around the target
 	// If auto-rotate is enabled, you must call controls.update() in your animation loop
@@ -70,10 +70,10 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.enableKeys = true;
 
 	// The four arrow keys
-	this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
-
+	//this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
+	this.keys = { LEFT: 65, UP: 83, RIGHT: 68, BOTTOM: 87 };
 	// Mouse buttons
-	this.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
+	this.mouseButtons = { ORBIT: THREE.MOUSE.RIGHT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.LEFT };
 
 	// for reset
 	this.target0 = this.target.clone();
@@ -178,7 +178,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 			scope.object.lookAt( scope.target );
 
-			if ( scope.enableDamping === true ) {
+			if ( scope.sw === true ) {
 
 				sphericalDelta.theta *= ( 1 - scope.dampingFactor );
 				sphericalDelta.phi *= ( 1 - scope.dampingFactor );
@@ -263,9 +263,9 @@ THREE.OrbitControls = function ( object, domElement ) {
 	var rotateEnd = new THREE.Vector2();
 	var rotateDelta = new THREE.Vector2();
 
-	var panStart = new THREE.Vector2();
-	var panEnd = new THREE.Vector2();
-	var panDelta = new THREE.Vector2();
+	var panStart = new THREE.Vector3();
+	var panEnd = new THREE.Vector3();
+	var panDelta = new THREE.Vector3();
 
 	var dollyStart = new THREE.Vector2();
 	var dollyEnd = new THREE.Vector2();
@@ -316,8 +316,9 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		return function panUp( distance, objectMatrix ) {
 
-			v.setFromMatrixColumn( objectMatrix, 1 ); // get Y column of objectMatrix
+			v.setFromMatrixColumn( objectMatrix, 2 ); // move Z //old (index 1)get Y column of objectMatrix
 			v.multiplyScalar( distance );
+
 
 			panOffset.add( v );
 
@@ -432,7 +433,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		//console.log( 'handleMouseDownPan' );
 
-		panStart.set( event.clientX, event.clientY );
+		panStart.set( event.clientX, 0, event.clientY );
 
 	}
 
@@ -485,11 +486,11 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		//console.log( 'handleMouseMovePan' );
 
-		panEnd.set( event.clientX, event.clientY );
+		panEnd.set( event.clientX, 0, event.clientY );
 
 		panDelta.subVectors( panEnd, panStart );
 
-		pan( panDelta.x, panDelta.y );
+		pan( panDelta.x, panDelta.z );
 
 		panStart.copy( panEnd );
 
@@ -576,7 +577,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		//console.log( 'handleTouchStartPan' );
 
-		panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+		panStart.set( event.touches[ 0 ].pageX, 0, event.touches[ 0 ].pageY );
 
 	}
 
@@ -634,11 +635,11 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		//console.log( 'handleTouchMovePan' );
 
-		panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+		panEnd.set( event.touches[ 0 ].pageX, 0, event.touches[ 0 ].pageY );
 
 		panDelta.subVectors( panEnd, panStart );
 
-		pan( panDelta.x, panDelta.y );
+		pan( panDelta.x, panDelta.z );
 
 		panStart.copy( panEnd );
 
