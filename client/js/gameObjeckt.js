@@ -5,11 +5,19 @@ function GameObject(scene) {
 }
 GameObject.prototype.addbuilding = function(dataId, x, z) {
 	switch ( dataId.dataId ) {
-		case 'road': // w
-			var newRoad = this.getNewRoad();
-			newRoad.position.x = x;
-			newRoad.position.z = z;
-			this.scene.add(newRoad);
+		case 'road':
+			this.getNewRoad(function (newRoad) {
+				newRoad.position.x = x;
+				newRoad.position.z = z;
+				this.scene.add(newRoad);
+			});
+			break;
+		case 'hovel': // w
+			this.getNewHouse(function (newHouse) {
+				newHouse.position.x = x;
+				newHouse.position.z = z;
+				this.scene.add(newHouse);
+			});
 			break;
 		default:
 			console.log(dataId.dataId, 'ikke fundet');
@@ -18,16 +26,22 @@ GameObject.prototype.addbuilding = function(dataId, x, z) {
 	}
 	
 };
-GameObject.prototype.getNewRoad = function() {
-	var roadContainer = new THREE.Object3D();
-	var topBottomGeometry = new THREE.BoxGeometry( this.scale/3, this.scale/10, this.scale );
-	var topBottom = new THREE.Mesh( topBottomGeometry, this.roadMaterial );
-	//topBottom.position.y = this.scale/2;
-	roadContainer.add(topBottom);
+GameObject.prototype.getNewRoad = function(callback) {
+	var loader = new THREE.JSONLoader();
+        loader.load( "json/road.json", function (geometry, materials) {
+        	var material = new THREE.MeshFaceMaterial( materials );
+            obj = new THREE.Mesh( geometry, material );
+            obj.scale.set(this.scale/4, this.scale/4, this.scale/4);
+            callback( obj );
+        } );
+};
+GameObject.prototype.getNewHouse = function(callback) {
 
-	var rightLeftGeometry = new THREE.BoxGeometry( this.scale, this.scale/10, this.scale/3 );
-	var rightLeft = new THREE.Mesh( rightLeftGeometry, this.roadMaterial );
-	//rightLeft.position.y = this.scale/2;
-	roadContainer.add(rightLeft);
-	return roadContainer;
+	var loader = new THREE.JSONLoader();
+        loader.load( "json/house.json", function (geometry, materials) {
+        	var material = new THREE.MeshFaceMaterial( materials );
+            obj = new THREE.Mesh( geometry, material );
+            obj.scale.set(this.scale/3, this.scale/3, this.scale/3);
+            callback( obj );
+        } );
 };
